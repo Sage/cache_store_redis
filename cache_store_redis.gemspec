@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   if RUBY_PLATFORM =~ /java/
     spec.platform = 'java'
   else
-    spec.add_dependency('oj')
+    spec.add_dependency 'oj'
   end
 
 end
