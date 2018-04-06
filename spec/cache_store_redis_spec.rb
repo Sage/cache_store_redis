@@ -1,7 +1,7 @@
 describe RedisCacheStore do
   before do
     @cache_store = RedisCacheStore.new('test')
-    @cache_store.configure(url: ENV.fetch('CACHE_STORE_HOST', 'localhost'))
+    @cache_store.configure(url: ENV.fetch('CACHE_STORE_HOST', nil))
   end
 
   after :each do
