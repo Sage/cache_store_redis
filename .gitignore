@@ -1,0 +1,14 @@
+/.bundle/
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+
+.idea/cache_store.iml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/workspace.xml
