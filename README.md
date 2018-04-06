@@ -1,5 +1,10 @@
 # CacheStoreRedis
 
+[![Build Status](https://travis-ci.org/Sage/cache_store_redis.svg?branch=master)](https://travis-ci.org/Sage/cache_store_redis)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c6a9256278881eab8328/maintainability)](https://codeclimate.com/github/Sage/cache_store_redis/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/c6a9256278881eab8328/test_coverage)](https://codeclimate.com/github/Sage/cache_store_redis/test_coverage)
+[![Gem Version](https://badge.fury.io/rb/cache_store_redis.svg)](https://badge.fury.io/rb/cache_store_redis)
+
 Welcome to CacheStore!
 
 This is the redis implementation for cache_store.
