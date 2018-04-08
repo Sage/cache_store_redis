@@ -1,7 +1,7 @@
 describe OptionalRedisCacheStore do
   before do
     @cache_store = OptionalRedisCacheStore.new(namespace: 'test')
-    @cache_store.configure
+    @cache_store.configure(url: ENV.fetch('CACHE_STORE_HOST', nil))
   end
 
   describe '#set' do

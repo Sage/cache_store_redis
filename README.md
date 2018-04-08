@@ -34,6 +34,37 @@ $ gem install cache_store_redis
  - **CACHE_STORE_POOL_SIZE** [Integer] [Default=10] This is the max number of cache_store connections to redis to allow in the connection pool.
  - **CACHE_STORE_POOL_TIMEOUT** [Integer] [Default=1] This is the max number of seconds to wait for a connection from the pool before a timeout occurs.
 
+## Testing
+
+To run the tests locally, we use Docker to provide both a Ruby and JRuby environment along with a reliable Redis container.
+
+### Setup Images:
+
+> This builds the Ruby and JRuby docker images.
+
+```bash
+cd script
+./setup.sh
+```
+
+### Run Tests:
+
+> This executes the test suite in both Ruby and JRuby.
+
+```bash
+cd script
+./test.sh
+```
+
+### Cleanup
+
+> This is used to clean down docker images created in the setup script.
+
+```bash
+cd script
+./cleanup.sh
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

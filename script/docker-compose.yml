@@ -1,0 +1,28 @@
+redis:
+  image: redis:alpine
+  container_name: redis_cache
+  ports:
+    - "6379:6379"
+
+testrunner:
+  image: sageone/testrunner
+  container_name: testrunner
+  command: sh -c "while true; do echo 'Container is running..'; sleep 5; done"
+  environment:
+    - CACHE_STORE_HOST=redis://redis:6379
+  volumes:
+    - ../:/code
+  links:
+    - redis
+
+testrunner2:
+  image: sageone/testrunner_jruby
+  container_name: testrunner_jruby
+  command: sh -c "while true; do echo 'Container is running..'; sleep 5; done"
+  environment:
+    - CACHE_STORE_HOST=redis://redis:6379
+  volumes:
+    - ../:/code
+  links:
+    - redis
+

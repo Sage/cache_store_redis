@@ -1,0 +1,12 @@
+FROM jruby:9.1-alpine
+
+RUN apk add --no-cache --update bash
+
+# Create application directory and set it as the WORKDIR.
+ENV APP_HOME /code
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
+
+COPY . $APP_HOME
+
+RUN jruby -S bundle install
