@@ -106,7 +106,7 @@ class RedisCacheStore
   # @param key [String] This is the unique key to reference the value being set within this cache store.
   # @param value [Object] This is the value to set within this cache store.
   # @param expires_in [Integer] This is the number of seconds from the current time that this value should expire.
-  def set(key, value, expires_in = 0)
+  def set(key, value, expires_in = nil)
     k = build_key(key)
 
     v = if value.nil? || (value.is_a?(String) && value.strip.empty?)
@@ -116,11 +116,7 @@ class RedisCacheStore
     end
 
     with_client do |client|
-      client.multi do
-        client.set(k, v)
-
-        client.expire(k, expires_in) if expires_in.positive?
-      end
+      client.set(k, v, options = { ex: expires_in })
     end
   end
 
@@ -132,7 +128,7 @@ class RedisCacheStore
   # @param &block [Block] This block is provided to hydrate this cache store with the value for the request key
   # when it is not found.
   # @return [Object] The value for the specified unique key within the cache store.
-  def get(key, expires_in = 0, &block)
+  def get(key, expires_in = nil, &block)
     k = build_key(key)
 
     value = with_client do |client|
