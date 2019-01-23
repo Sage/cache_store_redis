@@ -14,15 +14,3 @@ testrunner:
     - ../:/code
   links:
     - redis
-
-testrunner2:
-  image: sageone/testrunner_jruby
-  container_name: testrunner_jruby
-  command: sh -c "while true; do echo 'Container is running..'; sleep 5; done"
-  environment:
-    - CACHE_STORE_HOST=redis://redis:6379
-  volumes:
-    - ../:/code
-  links:
-    - redis
-
