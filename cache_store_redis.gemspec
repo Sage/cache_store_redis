@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'This is the redis cache_store implementation.'
   spec.description   = 'This is the redis cache_store implementation.'
-  spec.homepage      = 'https://github.com/vaughanbrittonsage/cache_store'
+  spec.homepage      = 'https://github.com/sage/cache_store'
   spec.license       = 'MIT'
 
   spec.files         = Dir.glob("{bin,lib}/**/**/**")
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler', '~> 1.11'
+  spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'simplecov'
