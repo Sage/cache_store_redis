@@ -3,7 +3,6 @@ services:
   - redis-server
 rvm:
   - 2.3.5
-  - jruby
 cache: bundler
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64

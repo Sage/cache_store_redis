@@ -25,10 +25,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'redis'
 
-  if RUBY_PLATFORM =~ /java/
-    spec.platform = 'java'
-  else
-    spec.add_dependency 'oj'
-  end
-
+  spec.add_dependency 'oj'
 end
