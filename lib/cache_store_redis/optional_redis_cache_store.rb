@@ -1,5 +1,3 @@
-require 'logger'
-
 # This class is used to define a redis cache store that logs failures as warnings but does not raise errors for
 # cache connections
 class OptionalRedisCacheStore
@@ -7,7 +5,7 @@ class OptionalRedisCacheStore
     @cache_store = RedisCacheStore.new(namespace, config)
     @logger = logger || Logger.new(STDOUT)
   end
-  
+
   def redis_store
     @cache_store
   end

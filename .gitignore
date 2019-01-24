@@ -8,6 +8,7 @@
 /spec/reports/
 /tmp/
 bin/
+.DS_Store
 
 .idea/cache_store.iml
 .idea/inspectionProfiles/

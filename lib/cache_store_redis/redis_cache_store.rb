@@ -3,10 +3,6 @@ class RedisCacheStore
   def initialize(namespace = nil, config = nil)
     @connection_pool = RedisConnectionPool.new(config)
 
-    unless RUBY_PLATFORM == 'java'
-      require 'oj'
-    end
-
     @namespace = namespace
     @config = config
 
@@ -141,19 +137,11 @@ class RedisCacheStore
   private
 
   def serialize(object)
-    if RUBY_PLATFORM == 'java'
-      Marshal::dump(object)
-    else
-      Oj.dump(object)
-    end
+    Oj.dump(object)
   end
 
   def deserialize(object)
-    if RUBY_PLATFORM == 'java'
-      Marshal::load(object)
-    else
-      Oj.load(object)
-    end
+    Oj.load(object)
   end
 
   def build_key(key)
