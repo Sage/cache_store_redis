@@ -37,10 +37,7 @@ class OptionalRedisCacheStore
   def optional_get(key, expires_in = 0)
     redis_store.get(key, expires_in)
   rescue => e
-    @logger.error(
-      "[#{self.class}] - An error occurred requesting data from the cache. " \
-"Key: #{key} | Error: #{e.message} | Backtrace: #{e.backtrace}"
-    )
+    handle_error(e, 'requesting data from the cache')
     nil
   end
 
@@ -58,48 +55,42 @@ class OptionalRedisCacheStore
   def set(key, value, expires_in = 0)
     redis_store.set(key, value, expires_in)
   rescue => e
-    @logger.error(
-      "[#{self.class}] - An error occurred storing data in the cache. " \
-"Key: #{key} | Error: #{e.message} | Backtrace: #{e.backtrace}"
-    )
+    handle_error(e, 'storing data in the cache')
   end
 
   def remove(key)
     redis_store.remove(key)
   rescue => e
-    @logger.error(
-      "[#{self.class}] - An error occurred removing data from the cache. " \
-"Key: #{key} | Error: #{e.message} | Backtrace: #{e.backtrace}"
-    )
+    handle_error(e, 'removing data from the cache')
   end
 
   def exist?(key)
     redis_store.exist?(key)
   rescue => e
-    @logger.error(
-      "[#{self.class}] - An error occurred checking if a key exists in the cache. " \
-"Key: #{key} | Error: #{e.message} | Backtrace: #{e.backtrace}"
-    )
+    handle_error(e, 'checking if a key exists in the cache')
     false
   end
 
   def ping
     redis_store.ping
   rescue => e
-    @logger.error(
-      "[#{self.class}] - An error occurred checking pinging the cache. " \
-"Error: #{e.message} | Backtrace: #{e.backtrace}"
-    )
+    handle_error(e, 'pinging the cache')
     false
   end
 
   def shutdown
     redis_store.shutdown
   rescue => e
-    @logger.error(
-      "[#{self.class}] - An error occurred checking shutting down the connection pool. " \
-"Error: #{e.message} | Backtrace: #{e.backtrace}"
-    )
+    handle_error(e, 'shutting down the connection pool')
     false
+  end
+
+  private
+
+  def handle_error(ex, msg)
+    @logger.error do
+      "[#{self.class}] - An error occurred #{msg}. " \
+      "Error: #{ex.message} | Backtrace: #{ex.backtrace}"
+    end
   end
 end
