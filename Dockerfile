@@ -3,7 +3,7 @@ FROM ruby:2.3-alpine
 RUN apk add --no-cache --update bash
 
 RUN apk add --no-cache --update --virtual .gem-builddeps make gcc libc-dev ruby-json \
-    && gem install -N oj -v 2.15.0 \
+    && gem install -N oj -v 3.6.10 \
     && gem install -N json -v 2.1.0 \
     && apk del .gem-builddeps
 
