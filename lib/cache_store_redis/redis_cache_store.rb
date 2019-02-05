@@ -1,5 +1,8 @@
 # This class is used to implement a redis cache store.
 class RedisCacheStore
+  # Default expiry time if not provided. (1 hour)
+  DEFAULT_TTL = 3_600
+
   def initialize(namespace = nil, config = nil)
     @connection_pool = RedisConnectionPool.new(config)
 
@@ -59,7 +62,7 @@ class RedisCacheStore
   # @param key [String] This is the unique key to reference the value being set within this cache store.
   # @param value [Object] This is the value to set within this cache store.
   # @param expires_in [Integer] This is the number of seconds from the current time that this value should expire.
-  def set(key, value, expires_in = 3_600)
+  def set(key, value, expires_in = DEFAULT_TTL)
     k = build_key(key)
 
     v = if value.nil? || (value.is_a?(String) && value.strip.empty?)
@@ -68,11 +71,14 @@ class RedisCacheStore
       serialize(value)
     end
 
+    expiry_int = Integer(expires_in)
+    expire_value = expiry_int.positive? ? expiry_int : DEFAULT_TTL
+
     with_client do |client|
       client.multi do
         client.set(k, v)
 
-        client.expire(k, expires_in) if expires_in.positive?
+        client.expire(k, expire_value)
       end
     end
   end

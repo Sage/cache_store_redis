@@ -9,6 +9,35 @@ describe RedisCacheStore do
   end
 
   describe "#set" do
+    context 'expires_in' do
+      let(:key) { SecureRandom.uuid }
+      let(:value) { 'SomeValue' }
+
+      it 'will always set a default TTL if one is not provided' do
+        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+        @cache_store.set(key, value)
+      end
+
+      it 'will always set a default TTL if an invalid one is provided' do
+        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+        @cache_store.set(key, value, -200)
+      end
+
+      it 'will always set a default TTL if an invalid one is provided' do
+        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+        @cache_store.set(key, value, 0.456)
+      end
+
+      it 'will always force the TTL to be an integer' do
+        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 20)
+        @cache_store.set(key, value, 20.123)
+      end
+    end
+
     it 'should add a string to the cache store and retrieve it' do
       key = SecureRandom.uuid
       value = 'value123'
