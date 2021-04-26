@@ -1,3 +1,7 @@
+# v2.1.1
+
+* Fix handling of config passed to RedisCacheStore constructor
+
 # v2.1.0
 
 * Set method enforces a default TTL of `3_600` if the `expires_in` option is not provided, or is invalid.
