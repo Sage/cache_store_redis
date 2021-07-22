@@ -31,11 +31,11 @@ $ gem install cache_store_redis
 
 ## Testing
 
-To run the tests locally, we use Docker to provide both a Ruby and JRuby environment along with a reliable Redis container.
+To run the tests locally, we use Docker to provide a Ruby container.
 
 ### Setup Images:
 
-> This builds the Ruby and JRuby docker images.
+> This builds the Ruby docker image.
 
 ```bash
 cd script
@@ -44,7 +44,7 @@ cd script
 
 ### Run Tests:
 
-> This executes the test suite in both Ruby and JRuby.
+> This executes the test suite
 
 ```bash
 cd script
