@@ -5,3 +5,4 @@ gemspec
 
 gem 'oj', '3.6.10'
 gem 'pry'
+gem 'simplecov', '< 0.18.0'
