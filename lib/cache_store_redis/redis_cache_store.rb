@@ -4,7 +4,7 @@ class RedisCacheStore
   DEFAULT_TTL = 3_600
 
   def initialize(namespace = nil, config = nil)
-    @connection_pool = RedisConnectionPool.new(config)
+    @connection_pool = RedisConnectionPool.new(namespace, config)
 
     @namespace = namespace
     @config = config
