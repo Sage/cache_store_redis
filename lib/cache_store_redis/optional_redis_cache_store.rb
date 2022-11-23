@@ -85,6 +85,10 @@ class OptionalRedisCacheStore
     false
   end
 
+  alias read get
+  alias write set
+  alias delete remove
+
   private
 
   def handle_error(ex, msg)

@@ -7,10 +7,17 @@ describe OptionalRedisCacheStore do
   describe '#set' do
     let(:key) { 'setkey' }
     let(:value) { double }
+
     it 'should pass the key/value to the redis_store' do
       expect(@cache_store.redis_store).to receive(:set).with(key, value, 0).once
       @cache_store.set(key, value)
     end
+
+    it 'is aliased to #write' do
+      expect(@cache_store.redis_store).to receive(:set).with(key, value, 0).once
+      @cache_store.write(key, value)
+    end
+
     context 'when an error occurs' do
       before do
         allow(@cache_store.redis_store).to receive(:set).and_raise(StandardError)
