@@ -72,7 +72,7 @@ class RedisCacheStore
     end
 
     expiry_int = Integer(expires_in)
-    expire_value = expiry_int.positive? ? expiry_int : DEFAULT_TTL
+    expire_value = expiry_int.positive? ? expiry_int : Integer(DEFAULT_TTL)
 
     with_client do |client|
       client.multi do
