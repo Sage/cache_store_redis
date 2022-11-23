@@ -24,6 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'timecop'
 
-  spec.add_dependency 'redis'
   spec.add_dependency 'oj'
+  spec.add_dependency 'redis'
 end
