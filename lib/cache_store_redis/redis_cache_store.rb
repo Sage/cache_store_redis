@@ -127,7 +127,7 @@ class RedisCacheStore
   # @return [Boolean] True or False to specify if the key exists in the cache store.
   def exist?(key)
     with_client do |client|
-      client.exists(build_key(key))
+      !client.exists(build_key(key)).zero?
     end
   end
 
