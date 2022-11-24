@@ -147,11 +147,11 @@ RSpec.shared_examples '#remove' do |method_name|
     before { subject.set(key, value) }
 
     it 'removes that value' do
-      expect(subject.exist?(key)).to eq(true)
+      expect(subject.exist?(key)).to be true
 
       subject.public_send(method_name, key)
 
-      expect(subject.exist?(key)).to eq(false)
+      expect(subject.exist?(key)).to be false
     end
   end
 
@@ -196,7 +196,7 @@ describe RedisCacheStore do
       let(:key) { SecureRandom.uuid }
 
       it 'returns false' do
-        expect(subject.exist?(key)).to eq(false)
+        expect(subject.exist?(key)).to be false
       end
     end
 
@@ -206,7 +206,7 @@ describe RedisCacheStore do
       before { subject.set(key, '123') }
 
       it 'returns true ' do
-        expect(subject.exist?(key)).to eq(true)
+        expect(subject.exist?(key)).to be true
       end
     end
   end
