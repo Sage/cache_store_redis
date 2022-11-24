@@ -37,8 +37,7 @@ To run the tests locally, we use Docker to provide a Ruby container.
 > This builds the Ruby docker image.
 
 ```bash
-cd script
-./setup.sh
+./script/setup.sh
 ```
 
 ### Run Tests:
@@ -46,8 +45,7 @@ cd script
 > This executes the test suite
 
 ```bash
-cd script
-./test.sh
+./script/test.sh
 ```
 
 ### Cleanup
@@ -55,8 +53,7 @@ cd script
 > This is used to clean down docker images created in the setup script.
 
 ```bash
-cd script
-./cleanup.sh
+./script/cleanup.sh
 ```
 
 ## Development
