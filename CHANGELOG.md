@@ -1,3 +1,7 @@
+# v2.2.0
+
+* Alias `#get`, `#set`, and `#remove` to `#read`, `#write`, and `#delete`, so that `RedisCacheStore` and `OptionalRedisCacheStore` can be used anywhere that expects a `#read`, `#write`, `#delete` API e.g. `faraday-http-cache`.
+
 # v2.1.1
 
 * Fix handling of config passed to RedisCacheStore constructor
