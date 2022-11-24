@@ -1,148 +1,194 @@
-describe RedisCacheStore do
-  before do
-    @cache_store = RedisCacheStore.new('test')
-    @cache_store.configure(url: ENV.fetch('CACHE_STORE_HOST', nil))
-  end
+# frozen_string_literal: true
 
-  after :each do
-    @cache_store.with_client &:flushdb
-  end
+require 'spec_helper'
 
-  describe "#set" do
-    context 'expires_in' do
-      let(:key) { SecureRandom.uuid }
-      let(:value) { 'SomeValue' }
+RSpec.shared_examples '#set' do |method_name|
+  context 'expires_in' do
+    let(:key) { SecureRandom.uuid }
+    let(:value) { 'SomeValue' }
 
-      it 'will always set a default TTL if one is not provided' do
-        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
-        @cache_store.set(key, value)
-      end
-
-      it 'will always set a default TTL if an invalid one is provided' do
-        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
-        @cache_store.set(key, value, -200)
-      end
-
-      it 'will always set a default TTL if an invalid one is provided' do
-        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
-        @cache_store.set(key, value, 0.456)
-      end
-
-      it 'will always force the TTL to be an integer' do
-        expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-        expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 20)
-        @cache_store.set(key, value, 20.123)
-      end
+    it 'will always set a default TTL if one is not provided' do
+      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      subject.public_send(method_name, key, value)
     end
 
-    it 'should add a string to the cache store and retrieve it' do
-      key = SecureRandom.uuid
-      value = 'value123'
-      @cache_store.set(key, value)
-
-      v = @cache_store.get(key)
-
-      expect(v).to eq(value)
+    it 'will always set a default TTL if an invalid one is provided' do
+      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      subject.public_send(method_name, key, value, -200)
     end
 
-    it 'should add an object to the cache store and retrieve it' do
-      key = SecureRandom.uuid
+    it 'will always set a default TTL if an invalid one is provided' do
+      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      subject.public_send(method_name, key, value, 0.456)
+    end
+
+    it 'will always force the TTL to be an integer' do
+      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 20)
+      subject.public_send(method_name, key, value, 20.123)
+    end
+  end
+
+  it 'should add a string to the cache store and retrieve it' do
+    key = SecureRandom.uuid
+    value = 'value123'
+    subject.public_send(method_name, key, value)
+
+    v = subject.get(key)
+
+    expect(v).to eq(value)
+  end
+
+  it 'should add an object to the cache store and retrieve it' do
+    key = SecureRandom.uuid
+    value = TestObject.new
+    value.text = 'abc123'
+    value.numeric = 123
+
+    subject.public_send(method_name, key, value)
+
+    v = subject.get(key)
+
+    expect(v.class).to eq(TestObject)
+    expect(v.text).to eq(value.text)
+    expect(v.numeric).to eq(value.numeric)
+  end
+
+  it 'should run the hydration block when the requested key does not exist in the cache' do
+    key = SecureRandom.uuid
+
+    v = subject.get(key) do
       value = TestObject.new
       value.text = 'abc123'
       value.numeric = 123
-
-      @cache_store.set(key, value)
-
-      v = @cache_store.get(key)
-
-      expect(v.class).to eq(TestObject)
-      expect(v.text).to eq(value.text)
-      expect(v.numeric).to eq(value.numeric)
+      value
     end
 
-    it 'should run the hydration block when the requested key does not exist in the cache' do
-      key = SecureRandom.uuid
+    expect(v.class).to eq(TestObject)
+    expect(v.text).to eq('abc123')
+    expect(v.numeric).to eq(123)
 
-      v = @cache_store.get(key) do
-        value = TestObject.new
-        value.text = 'abc123'
-        value.numeric = 123
-        value
-      end
+    v2 = subject.get(key)
+    expect(v2.class).to eq(TestObject)
+    expect(v2.text).to eq('abc123')
+    expect(v2.numeric).to eq(123)
+  end
 
-      expect(v.class).to eq(TestObject)
-      expect(v.text).to eq('abc123')
-      expect(v.numeric).to eq(123)
+  context 'when set value has expired' do
+    let(:key  ) { SecureRandom.uuid }
+    let(:value) { '123'             }
 
-      v2 = @cache_store.get(key)
-      expect(v2.class).to eq(TestObject)
-      expect(v2.text).to eq('abc123')
-      expect(v2.numeric).to eq(123)
+    before :each do
+      subject.public_send(method_name, key, value, 1)
+      sleep(1.2)  # TODO: find a way to remove this by stubbing the Redis expire mechanism
     end
 
-    context 'when set value has expired' do
-      let(:key  ) { SecureRandom.uuid }
-      let(:value) { '123'             }
-
-      before :each do
-        @cache_store.set(key, value, 1)
-        sleep(1.2)  # TODO: find a way to remove this by stubbing the Redis expire mechanism
-      end
-
-      it 'returns nil' do
-        expect(@cache_store.get(key)).to be_nil
-      end
-    end
-
-    context 'when namespaced' do
-      let(:key  ) { 'name' }
-      let(:value) { 'Tom'  }
-
-      subject { described_class.new('myname') }
-
-      it 'sets the value' do
-        @cache_store.set(key, value)
-
-        expect(@cache_store.get(key)).to eq(value)
-      end
-
-      context 'when key already exists' do
-        let(:new_value) { 'Peter' }
-        before { @cache_store.set(key, value) }
-
-        it 'updates the item' do
-          @cache_store.set(key, new_value)
-
-          expect(@cache_store.get(key)).to eq(new_value)
-        end
-      end
+    it 'returns nil' do
+      expect(subject.get(key)).to be_nil
     end
   end
 
+  context 'when namespaced' do
+    let(:key  ) { 'name' }
+    let(:value) { 'Tom'  }
+
+    subject { described_class.new('myname') }
+
+    it 'sets the value' do
+      subject.public_send(method_name, key, value)
+
+      expect(subject.get(key)).to eq(value)
+    end
+
+    context 'when key already exists' do
+      let(:new_value) { 'Peter' }
+      before { subject.public_send(method_name, key, value) }
+
+      it 'updates the item' do
+        subject.public_send(method_name, key, new_value)
+
+        expect(subject.get(key)).to eq(new_value)
+      end
+    end
+  end
+end
+
+RSpec.shared_examples '#get' do |method_name|
+  let(:value) { 'value' }
+  let(:key) { 'getkey' }
+
+  it 'runs the hyrdation block when the value is not in the cache' do
+    v = subject.public_send(method_name, key) do
+      value
+    end
+
+    expect(subject.public_send(method_name, key)).to eq v
+  end
+
+  context 'when the value in the store is empty string' do
+    let(:value) { '' }
+
+    it 'does not attempt to deserialize' do
+      subject.set(key, value)
+      expect(subject).to_not receive(:deserialize)
+      expect(subject.public_send(method_name, key)).to be nil
+    end
+  end
+end
+
+RSpec.shared_examples '#remove' do |method_name|
+  context 'when the value exists' do
+    let(:key  ) { SecureRandom.uuid }
+    let(:value) { '123'             }
+
+    before { subject.set(key, value) }
+
+    it 'removes that value' do
+      expect(subject.exist?(key)).to be true
+
+      subject.public_send(method_name, key)
+
+      expect(subject.exist?(key)).to be false
+    end
+  end
+
+  context 'when the value does no exist' do
+    let(:key) { SecureRandom.uuid }
+
+    it 'does not raise an exception' do
+      expect { subject.public_send(method_name, key) }.to_not raise_error
+    end
+  end
+end
+
+describe RedisCacheStore do
+  subject { described_class.new('test') }
+
+  before do
+    subject.configure(url: ENV.fetch('REDIS_URL'))
+  end
+
+  after :each do
+    subject.with_client &:flushdb
+  end
+
+  describe '#set' do
+    it_behaves_like '#set', 'set'
+  end
+
+  describe '#write' do
+    it_behaves_like '#set', 'write'
+  end
+
   describe '#get' do
-    let(:value) { 'value' }
-    let(:key) { 'getkey' }
+    it_behaves_like '#get', 'get'
+  end
 
-    it 'runs the hyrdation block when the value is not in the cache' do
-      v = @cache_store.get(key) do
-        value
-      end
-
-      expect(@cache_store.get(key)).to eq v
-    end
-
-    context 'when the value in the store is empty string' do
-      let(:value) { '' }
-
-      it 'does not attempt to deserialize' do
-        @cache_store.set(key, value)
-        expect(subject).to_not receive(:deserialize)
-        expect(@cache_store.get(key)).to be nil
-      end
-    end
+  describe '#read' do
+    it_behaves_like '#get', 'read'
   end
 
   describe '#exists?' do
@@ -150,49 +196,32 @@ describe RedisCacheStore do
       let(:key) { SecureRandom.uuid }
 
       it 'returns false' do
-        expect(@cache_store.exist?(key)).to eq(false)
+        expect(subject.exist?(key)).to be false
       end
     end
 
     context 'when a key exists' do
       let(:key) { SecureRandom.uuid }
 
-      before { @cache_store.set(key, '123') }
+      before { subject.set(key, '123') }
 
       it 'returns true ' do
-        expect(@cache_store.exist?(key)).to eq(true)
+        expect(subject.exist?(key)).to be true
       end
     end
   end
 
   describe '#remove' do
-    context 'when the value exists' do
-      let(:key  ) { SecureRandom.uuid }
-      let(:value) { '123'             }
+    it_behaves_like '#remove', 'remove'
+  end
 
-      before { @cache_store.set(key, value) }
-
-      it 'removes that value' do
-        expect(@cache_store.exist?(key)).to eq(true)
-
-        @cache_store.remove(key)
-
-        expect(@cache_store.exist?(key)).to eq(false)
-      end
-    end
-
-    context 'when the value does no exist' do
-      let(:key) { SecureRandom.uuid }
-
-      it 'does not raise an exception' do
-        expect { @cache_store.remove(key) }.to_not raise_error
-      end
-    end
+  describe '#delete' do
+    it_behaves_like '#remove', 'delete'
   end
 
   describe '#ping' do
     it 'pings the cache store' do
-      expect(@cache_store.ping).to eq 'PONG'
+      expect(subject.ping).to eq 'PONG'
     end
   end
 end

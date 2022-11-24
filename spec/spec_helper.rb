@@ -5,6 +5,7 @@ end
 
 require 'timecop'
 require 'pry'
+require 'pry-byebug'
 require_relative 'test_object'
 require_relative '../lib/cache_store_redis'
 
