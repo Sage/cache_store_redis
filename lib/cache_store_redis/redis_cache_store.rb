@@ -140,6 +140,10 @@ class RedisCacheStore
     end
   end
 
+  alias write set
+  alias read get
+  alias delete remove
+
   private
 
   def serialize(object)

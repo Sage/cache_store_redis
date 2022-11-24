@@ -1,3 +1,70 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.shared_examples '#set' do |method_name|
+  let(:key) { 'setkey' }
+  let(:value) { double }
+
+  it 'should pass the key/value to the redis_store' do
+    expect(subject.redis_store).to receive(:set).with(key, value, 0).once
+    subject.public_send(method_name, key, value)
+  end
+
+  it 'is aliased to #write' do
+    expect(subject.redis_store).to receive(:set).with(key, value, 0).once
+    subject.public_send(method_name, key, value)
+  end
+
+  context 'when an error occurs' do
+    before do
+      allow(subject.redis_store).to receive(:set).and_raise(StandardError)
+    end
+
+    it 'does not raise error' do
+      expect{ subject.public_send(method_name, key, value) }.not_to raise_error
+    end
+  end
+end
+
+RSpec.shared_examples '#get' do |method_name|
+  let(:key) { 'getkey' }
+
+  it 'requests the key from the redis_store' do
+    expect(subject.redis_store).to receive(:get).with(key, 0).once
+    subject.public_send(method_name, key)
+  end
+
+  context 'when an error occurs' do
+    before do
+      allow(subject.redis_store).to receive(:get).and_raise(StandardError)
+    end
+
+    it 'returns nil' do
+      expect(subject.public_send(method_name, key)).to be nil
+    end
+  end
+end
+
+RSpec.shared_examples '#remove' do |method_name|
+  let(:key) { 'remove_key' }
+
+  it 'should pass the key to the redis_store' do
+    expect(subject.redis_store).to receive(:remove).with(key).once
+    subject.public_send(method_name, key)
+  end
+
+  context 'when an error occurs' do
+    before do
+      allow(subject.redis_store).to receive(:remove).and_raise(StandardError)
+    end
+
+    it 'does not raise error' do
+      expect{ subject.public_send(method_name, key) }.not_to raise_error
+    end
+  end
+end
+
 describe OptionalRedisCacheStore do
   subject { described_class.new(namespace: 'test') }
 
@@ -6,43 +73,19 @@ describe OptionalRedisCacheStore do
   end
 
   describe '#set' do
-    let(:key) { 'setkey' }
-    let(:value) { double }
+    it_behaves_like '#set', 'set'
+  end
 
-    it 'should pass the key/value to the redis_store' do
-      expect(subject.redis_store).to receive(:set).with(key, value, 0).once
-      subject.set(key, value)
-    end
-
-    it 'is aliased to #write' do
-      expect(subject.redis_store).to receive(:set).with(key, value, 0).once
-      subject.write(key, value)
-    end
-
-    context 'when an error occurs' do
-      before do
-        allow(subject.redis_store).to receive(:set).and_raise(StandardError)
-      end
-      it 'does not raise error' do
-        expect{ subject.set(key, value) }.not_to raise_error
-      end
-    end
+  describe '#write' do
+    it_behaves_like '#set', 'write'
   end
 
   describe '#get' do
-    let(:key) { 'getkey' }
-    it 'requests the key from the redis_store' do
-      expect(subject.redis_store).to receive(:get).with(key, 0).once
-      subject.get(key)
-    end
-    context 'when an error occurs' do
-      before do
-        allow(subject.redis_store).to receive(:get).and_raise(StandardError)
-      end
-      it 'returns nil' do
-        expect(subject.get(key)).to be nil
-      end
-    end
+    it_behaves_like '#get', 'get'
+  end
+
+  describe '#read' do
+    it_behaves_like '#get', 'read'
   end
 
   describe '#exist?' do
@@ -62,19 +105,11 @@ describe OptionalRedisCacheStore do
   end
 
   describe '#remove' do
-    let(:key) { 'remove_key' }
-    it 'should pass the key to the redis_store' do
-      expect(subject.redis_store).to receive(:remove).with(key).once
-      subject.remove(key)
-    end
-    context 'when an error occurs' do
-      before do
-        allow(subject.redis_store).to receive(:remove).and_raise(StandardError)
-      end
-      it 'does not raise error' do
-        expect{ subject.remove(key) }.not_to raise_error
-      end
-    end
+    it_behaves_like '#remove', 'remove'
+  end
+
+  describe '#remove' do
+    it_behaves_like '#remove', 'delete'
   end
 
   describe '#ping' do
