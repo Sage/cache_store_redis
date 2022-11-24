@@ -72,7 +72,7 @@ class RedisCacheStore
     end
 
     expiry_int = Integer(expires_in)
-    expire_value = expiry_int.positive? ? expiry_int : DEFAULT_TTL
+    expire_value = expiry_int.positive? ? expiry_int : Integer(DEFAULT_TTL)
 
     with_client do |client|
       client.multi do
@@ -127,7 +127,7 @@ class RedisCacheStore
   # @return [Boolean] True or False to specify if the key exists in the cache store.
   def exist?(key)
     with_client do |client|
-      client.exists(build_key(key))
+      !client.exists(build_key(key)).zero?
     end
   end
 
@@ -139,6 +139,10 @@ class RedisCacheStore
       client.ping
     end
   end
+
+  alias write set
+  alias read get
+  alias delete remove
 
   private
 
