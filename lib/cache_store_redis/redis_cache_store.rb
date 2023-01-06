@@ -15,14 +15,12 @@ class RedisCacheStore
     @enable_stats = false
   end
 
-  def connection_pool
-    @connection_pool
-  end
+  attr_reader :connection_pool
 
   # This method is called to configure the connection to the cache store.
   def configure(host = 'localhost',
                 port = 6379,
-                db = 'default',
+                db = 0,
                 password = nil,
                 driver: nil,
                 url: nil,
@@ -49,12 +47,10 @@ class RedisCacheStore
   def clean
     connection_pool.shutdown
   end
-  alias_method :shutdown, :clean
+  alias shutdown clean
 
-  def with_client
-    connection_pool.with_connection do |connection|
-      yield connection
-    end
+  def with_client(&block)
+    connection_pool.with_connection(&block)
   end
 
   # This method is called to set a value within this cache store by it's key.
@@ -66,10 +62,10 @@ class RedisCacheStore
     k = build_key(key)
 
     v = if value.nil? || (value.is_a?(String) && value.strip.empty?)
-      nil
-    else
-      serialize(value)
-    end
+          nil
+        else
+          serialize(value)
+        end
 
     expiry_int = Integer(expires_in)
     expire_value = expiry_int.positive? ? expiry_int : Integer(DEFAULT_TTL)
@@ -91,7 +87,7 @@ class RedisCacheStore
   # @param &block [Block] This block is provided to hydrate this cache store with the value for the request key
   # when it is not found.
   # @return [Object] The value for the specified unique key within the cache store.
-  def get(key, expires_in = 0, &block)
+  def get(key, expires_in = 0)
     k = build_key(key)
 
     value = with_client do |client|
