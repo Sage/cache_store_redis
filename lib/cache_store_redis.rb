@@ -4,7 +4,6 @@ require 'thread'
 require 'cache_store_redis/version'
 require 'redis'
 require 'securerandom'
-require 'oj'
 require 'logger'
 
 require_relative 'cache_store_redis/redis_connection'
