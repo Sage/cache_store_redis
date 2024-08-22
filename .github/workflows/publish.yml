@@ -27,7 +27,7 @@ jobs:
         with:
           ruby-version: jruby
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - run: jruby -S bundle exec rake build cache_store_redis.gemspec
+      - run: jruby -S gem build cache_store_redis.gemspec
 
       - name: Publish to RubyGems
         run: |
