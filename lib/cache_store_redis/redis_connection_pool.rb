@@ -12,9 +12,7 @@ class RedisConnectionPool
       loop do
         sleep(1)
         @mutex.synchronize do
-          connections.select { |con| con.expired? }.each do |con|
-            con.close
-          end
+          connections.select(&:expired?).each(&:close)
         end
       end
     end
