@@ -42,6 +42,19 @@ RSpec.shared_examples '#set' do |method_name|
     expect(v).to eq(value)
   end
 
+  it 'should add a string to the cache store and retrieve it (java platform)' do
+    original_platform = RUBY_PLATFORM
+    key = SecureRandom.uuid
+    value = 'value123'
+    Object.const_set(:RUBY_PLATFORM, 'java')
+    subject.public_send(method_name, key, value)
+
+    v = subject.get(key)
+
+    expect(v).to eq(value)
+    Object.const_set(:RUBY_PLATFORM, original_platform)
+  end
+
   it 'should add an object to the cache store and retrieve it' do
     key = SecureRandom.uuid
     value = TestObject.new
@@ -55,6 +68,24 @@ RSpec.shared_examples '#set' do |method_name|
     expect(v.class).to eq(TestObject)
     expect(v.text).to eq(value.text)
     expect(v.numeric).to eq(value.numeric)
+  end
+
+  it 'should add an object to the cache store and retrieve it (java platform)' do
+    original_platform = RUBY_PLATFORM
+    key = SecureRandom.uuid
+    value = TestObject.new
+    value.text = 'abc123'
+    value.numeric = 123
+    Object.const_set(:RUBY_PLATFORM, 'java')
+
+    subject.public_send(method_name, key, value)
+
+    v = subject.get(key)
+
+    expect(v.class).to eq(TestObject)
+    expect(v.text).to eq(value.text)
+    expect(v.numeric).to eq(value.numeric)
+    Object.const_set(:RUBY_PLATFORM, original_platform)
   end
 
   it 'should run the hydration block when the requested key does not exist in the cache' do
