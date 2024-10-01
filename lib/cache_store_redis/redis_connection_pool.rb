@@ -12,29 +12,23 @@ class RedisConnectionPool
       loop do
         sleep(1)
         @mutex.synchronize do
-          connections.select { |con| con.expired? }.each do |con|
-            con.close
-          end
+          connections.select(&:expired?).each(&:close)
         end
       end
     end
   end
 
   # This method is called to get the namespace for redis keys.
-  def namespace
-    @namespace
-  end
+  attr_reader :namespace
 
   # This method is called to get the idle connection queue for this pool.
-  def queue
-    @queue
-  end
+  attr_reader :queue
 
   # This method is called to fetch a connection from the queue or create a new connection if no idle connections
   # are available.
   def fetch_connection
     queue.pop(true)
-  rescue
+  rescue StandardError
     RedisConnection.new(config)
   end
 
@@ -51,9 +45,7 @@ class RedisConnectionPool
 
   # This method is called to checkin a connection to the pool after use.
   def check_in(connection)
-    if connection.expired?
-      connection.close
-    end
+    connection.close if connection.expired?
     @mutex.synchronize do
       connections.push(connection)
       queue.push(connection)
@@ -63,15 +55,13 @@ class RedisConnectionPool
   # This method is called to use a connection from this pool.
   def with_connection
     connection = check_out
-    return yield connection.client
+    yield connection.client
   ensure
-    check_in(connection)
+    check_in(connection) if connection
   end
 
   # This method is called to get an array of idle connections in this pool.
-  def connections
-    @connections
-  end
+  attr_reader :connections
 
   def shutdown
     connections.each do |con|
