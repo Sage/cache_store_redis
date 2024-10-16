@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'This is the redis cache_store implementation.'
   spec.description   = 'This is the redis cache_store implementation.'
-  spec.homepage      = 'https://github.com/sage/cache_store'
+  spec.homepage      = 'https://github.com/sage/cache_store_redis'
   spec.license       = 'MIT'
 
   spec.files         = Dir.glob("{bin,lib}/**/**/**")
