@@ -14,7 +14,7 @@ class OptionalRedisCacheStore
   def configure(
     host = 'localhost',
     port = 6379,
-    db = 'default',
+    db = 0,
     password = nil,
     driver: nil,
     url: nil,
