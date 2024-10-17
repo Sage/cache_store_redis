@@ -1,3 +1,6 @@
+# v2.4.2
+* Update to `set` to use .multi correctly - the yield block now takes a parameter and calls that with the commands to execute which will then correctly be called in a multi block to redis
+
 # v2.2.0
 
 * Alias `#get`, `#set`, and `#remove` to `#read`, `#write`, and `#delete`, so that `RedisCacheStore` and `OptionalRedisCacheStore` can be used anywhere that expects a `#read`, `#write`, `#delete` API e.g. `faraday-http-cache`.
