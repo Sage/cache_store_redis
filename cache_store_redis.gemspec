@@ -13,6 +13,8 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/sage/cache_store'
   spec.license       = 'MIT'
 
+  spec.required_ruby_version = '>= 3.0'
+
   spec.files         = Dir.glob("{bin,lib}/**/**/**")
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }

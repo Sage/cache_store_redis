@@ -8,26 +8,26 @@ RSpec.shared_examples '#set' do |method_name|
     let(:value) { 'SomeValue' }
 
     it 'will always set a default TTL if one is not provided' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      expect_any_instance_of(Redis::MultiConnection).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis::MultiConnection).to receive(:expire).with("test:#{key}", 3_600)
       subject.public_send(method_name, key, value)
     end
 
     it 'will always set a default TTL if an invalid one is provided' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      expect_any_instance_of(Redis::MultiConnection).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis::MultiConnection).to receive(:expire).with("test:#{key}", 3_600)
       subject.public_send(method_name, key, value, -200)
     end
 
     it 'will always set a default TTL if an invalid one is provided' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      expect_any_instance_of(Redis::MultiConnection).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis::MultiConnection).to receive(:expire).with("test:#{key}", 3_600)
       subject.public_send(method_name, key, value, 0.456)
     end
 
     it 'will always force the TTL to be an integer' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 20)
+      expect_any_instance_of(Redis::MultiConnection).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect_any_instance_of(Redis::MultiConnection).to receive(:expire).with("test:#{key}", 20)
       subject.public_send(method_name, key, value, 20.123)
     end
   end
