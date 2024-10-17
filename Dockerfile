@@ -1,4 +1,4 @@
-FROM ruby:2.7-buster
+FROM ruby:3.2
 
 ARG BUNDLE_SAGEONEGEMS__JFROG__IO
 
