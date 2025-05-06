@@ -6,28 +6,33 @@ RSpec.shared_examples '#set' do |method_name|
   context 'expires_in' do
     let(:key) { SecureRandom.uuid }
     let(:value) { 'SomeValue' }
+    let(:mock_redis) { instance_double('Redis::MultiConnection') }
+
+    before do
+      allow(Redis::MultiConnection).to receive(:new).and_return(mock_redis)
+    end
 
     it 'will always set a default TTL if one is not provided' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      expect(mock_redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect(mock_redis).to receive(:expire).with("test:#{key}", 3_600)
       subject.public_send(method_name, key, value)
     end
 
     it 'will always set a default TTL if an invalid one is provided' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      expect(mock_redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect(mock_redis).to receive(:expire).with("test:#{key}", 3_600)
       subject.public_send(method_name, key, value, -200)
     end
 
     it 'will always set a default TTL if an invalid one is provided' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 3_600)
+      expect(mock_redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect(mock_redis).to receive(:expire).with("test:#{key}", 3_600)
       subject.public_send(method_name, key, value, 0.456)
     end
 
     it 'will always force the TTL to be an integer' do
-      expect_any_instance_of(Redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
-      expect_any_instance_of(Redis).to receive(:expire).with("test:#{key}", 20)
+      expect(mock_redis).to receive(:set).with("test:#{key}", "\"#{value}\"")
+      expect(mock_redis).to receive(:expire).with("test:#{key}", 20)
       subject.public_send(method_name, key, value, 20.123)
     end
   end

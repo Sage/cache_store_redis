@@ -1,3 +1,9 @@
+
+# v2.4.2
+
+* ENG-2688 - Resolve "Pipelining commands on a Redis instance is deprecated and will be removed in Redis 5.0.0." warnings
+* Update git workflow ruby-version to 2.7 to match .dockerfile
+
 # v2.2.0
 
 * Alias `#get`, `#set`, and `#remove` to `#read`, `#write`, and `#delete`, so that `RedisCacheStore` and `OptionalRedisCacheStore` can be used anywhere that expects a `#read`, `#write`, `#delete` API e.g. `faraday-http-cache`.
