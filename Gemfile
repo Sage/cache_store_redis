@@ -5,4 +5,4 @@ gemspec
 
 gem 'oj', '3.6.10' unless RUBY_PLATFORM == 'java'
 gem 'pry'
-gem 'simplecov', '< 0.18.0'
+gem 'simplecov-cobertura'
