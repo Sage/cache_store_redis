@@ -23,8 +23,6 @@ jobs:
           gem build cache_store_redis.gemspec
           gem push cache_store_redis-*.gem
 
-
-      - uses: actions/checkout@v4
       - name: Set up JRuby
         uses: ruby/setup-ruby@v1
         with:
@@ -35,5 +33,3 @@ jobs:
       - name: Publish to RubyGems
         run: |
           gem push cache_store_redis-*.gem
-        env:
-          GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
