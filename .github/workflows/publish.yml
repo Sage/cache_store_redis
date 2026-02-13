@@ -1,6 +1,8 @@
 name: Publish Gem
 on:
-  pull_request
+  push:
+    tags:
+      - 'v*'
 
 
 jobs:
