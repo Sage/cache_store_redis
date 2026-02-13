@@ -4,6 +4,7 @@ on:
     types:
       - "created"
 
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -21,4 +22,4 @@ jobs:
       - name: Publish to RubyGems
         run: |
           gem build cache_store_redis.gemspec
-          gem push cache_store_redis.gem
+          gem push cache_store_redis-*.gem
