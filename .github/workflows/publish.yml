@@ -1,8 +1,7 @@
 name: Publish Gem
 on:
-  release:
-    types:
-      - "created"
+  pull_request
+
 
 jobs:
   publish:
@@ -21,4 +20,4 @@ jobs:
       - name: Publish to RubyGems
         run: |
           gem build cache_store_redis.gemspec
-          gem push cache_store_redis.gem
+          gem push cache_store_redis-*.gem
