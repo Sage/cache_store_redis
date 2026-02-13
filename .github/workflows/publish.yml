@@ -21,15 +21,4 @@ jobs:
       - name: Publish to RubyGems
         run: |
           gem build cache_store_redis.gemspec
-          gem push cache_store_redis-*.gem
-
-      - name: Set up JRuby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: jruby
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - run: jruby -S gem build cache_store_redis.gemspec
-
-      - name: Publish to RubyGems
-        run: |
-          gem push cache_store_redis-*.gem
+          gem push cache_store_redis.gem
