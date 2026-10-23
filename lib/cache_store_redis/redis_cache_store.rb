@@ -57,7 +57,7 @@ class RedisCacheStore
     connection_pool.with_connection(&block)
   end
 
-  # This method is called to set a value within this cache store by it's key.
+  # This method is called to set a value within this cache store by its key.
   #
   # @param key [String] This is the unique key to reference the value being set within this cache store.
   # @param value [Object] This is the value to set within this cache store.
@@ -82,7 +82,7 @@ class RedisCacheStore
     end
   end
 
-  # This method is called to get a value from this cache store by it's unique key.
+  # This method is called to get a value from this cache store by its unique key.
   #
   # @param key [String] This is the unique key to reference the value to fetch from within this cache store.
   # @param expires_in [Integer] This is the number of seconds from the current time that this value should expire.
@@ -111,7 +111,7 @@ class RedisCacheStore
     value
   end
 
-  # This method is called to remove a value from this cache store by it's unique key.
+  # This method is called to remove a value from this cache store by its unique key.
   #
   # @param key [String] This is the unique key to reference the value to remove from this cache store.
   def remove(key)
